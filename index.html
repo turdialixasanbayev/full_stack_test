@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products API</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1 class="title">Products API</h1>
+
+        <div class="card">
+            <h2>Product qo'shish</h2>
+
+            <div class="form-group">
+                <input type="text" id="name" placeholder="Product name">
+                <input type="number" id="price" placeholder="Price">
+            </div>
+
+            <button class="btn" onclick="createProduct()">Create</button>
+        </div>
+
+        <div class="card">
+            <h2>Product list</h2>
+            <ul id="list" class="product-list"></ul>
+        </div>
+
+    </div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8000/api/products/";
+
+        async function loadProducts() {
+            const res = await fetch(API_URL);
+            const data = await res.json();
+
+            const list = document.getElementById("list");
+            list.innerHTML = "";
+
+            data.forEach(p => {
+                const li = document.createElement("li");
+                li.className = "product-item";
+                li.innerHTML = `
+                <span>${p.name}</span>
+                <strong>$${p.price}</strong>
+            `;
+                list.appendChild(li);
+            });
+        }
+
+        async function createProduct() {
+            const name = document.getElementById("name").value;
+            const price = document.getElementById("price").value;
+
+            await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: name,
+                    price: price
+                })
+            });
+
+            loadProducts();
+        }
+
+        loadProducts();
+    </script>
+
+</body>
+
+</html>
